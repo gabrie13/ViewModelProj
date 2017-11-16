@@ -14,13 +14,18 @@ namespace ViewModelEx.Controllers
     public class EmployeePositionController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        private readonly IPersonPositionService _ppservice = new PersonPositionService();
+        private readonly IPersonPositionService _ppService = new PersonPositionService();
+        private readonly IPositionService _positionService = new PositionService();
+        private readonly IPersonService _personService = new PersonService();
+
 
         // GET: EmployeePosition
         public ActionResult Index()
         {
             var personPositions = db.PersonPositions.Include(p => p.Position);
-            return View(_ppservice.GetAll());
+            var personList = _personService.GetAll();
+            var positionList = _positionService.GetAll();
+            return View(_ppService.GetAll());
         }
 
         // GET: EmployeePosition/Details/5
@@ -30,7 +35,9 @@ namespace ViewModelEx.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            PersonPositionViewModel personPosition = _ppservice.FindById(id.Value);
+            PersonPositionViewModel personPosition = _ppService.FindById(id.Value);
+            PositionViewModel position = _positionService.FindById(id.Value);
+            PersonViewModel person = _personService.FindById(id.Value);
             if (personPosition == null)
             {
                 return HttpNotFound();
